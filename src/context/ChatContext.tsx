@@ -1,5 +1,5 @@
 import { createContext, Dispatch, useReducer } from 'react'
-import { ChatActions, chatReducer } from './reducers'
+import { ChatActions, chatReducer } from './reducers/ChatReducer'
 
 export type UserType = {
   uid?: string

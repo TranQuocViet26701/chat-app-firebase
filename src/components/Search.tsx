@@ -10,6 +10,7 @@ import {
   where,
 } from 'firebase/firestore'
 import * as React from 'react'
+import { toast } from 'react-toastify'
 import { AuthContext } from '../context/AuthContext'
 import { db } from '../firebase'
 import UserChat from './UserChat'
@@ -17,12 +18,10 @@ import UserChat from './UserChat'
 export default function Search() {
   const [username, setUsername] = React.useState<string>('')
   const [user, setUser] = React.useState<any>()
-  const [error, setError] = React.useState<boolean>(false)
-
-  const { currentUser } = React.useContext(AuthContext)
+  const { state: authState } = React.useContext(AuthContext)
+  const currentUser = authState.currentUser
 
   const handleSearch = async () => {
-    setError(false)
     const usersRef = collection(db, 'users')
     const q = query(usersRef, where('displayName', '==', username))
 
@@ -34,7 +33,16 @@ export default function Search() {
       })
     } catch (error) {
       console.log('error: ', error)
-      setError(true)
+      toast.error('Something went wrong!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      })
     }
   }
 
@@ -86,7 +94,6 @@ export default function Search() {
           value={username}
         />
       </div>
-      {error && <span>Something went wrong</span>}
       {user && (
         <UserChat
           displayName={user.displayName}

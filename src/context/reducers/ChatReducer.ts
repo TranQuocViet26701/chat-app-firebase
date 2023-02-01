@@ -1,17 +1,5 @@
-import { AuthContext } from './AuthContext'
-import { useContext } from 'react'
-import { UserType } from './ChatContext'
-
-type ActionMap<M extends { [index: string]: any }> = {
-  [Key in keyof M]: M[Key] extends undefined
-    ? {
-        type: Key
-      }
-    : {
-        type: Key
-        payload: M[Key]
-      }
-}
+import { ActionMap } from '../../types'
+import { UserType } from '../ChatContext'
 
 export enum Types {
   CHANGE_USER = 'CHANGE_USER',

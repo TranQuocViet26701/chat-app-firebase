@@ -8,7 +8,8 @@ export interface MessageProps {
 }
 
 export default function Message({ message }: MessageProps) {
-  const { currentUser } = useContext(AuthContext)
+  const { state: authState } = useContext(AuthContext)
+  const currentUser = authState.currentUser
   const { state: chatState } = useContext(ChatContext)
 
   const isOwner = useMemo(

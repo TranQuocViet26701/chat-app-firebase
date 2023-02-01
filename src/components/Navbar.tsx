@@ -1,16 +1,16 @@
-import { signOut } from 'firebase/auth'
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import userImage from '../assets/user-image.jpeg'
 import { AuthContext } from '../context/AuthContext'
-import { auth } from '../firebase'
+import { AuthTypes } from '../context/reducers/AuthReducer'
 
 export default function Navbar() {
   const navigate = useNavigate()
-  const { currentUser } = React.useContext(AuthContext)
+  const { state: authState, dispatch } = React.useContext(AuthContext)
+  const currentUser = authState.currentUser
 
   const handleClick = () => {
-    signOut(auth)
+    dispatch({ type: AuthTypes.LOG_OUT, payload: null })
     navigate('/login')
   }
 

@@ -1,12 +1,16 @@
 import { signInWithEmailAndPassword } from 'firebase/auth'
 import * as React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import { Loader } from '../components/icons/Loader'
+import { AuthContext } from '../context/AuthContext'
+import { AuthTypes } from '../context/reducers/AuthReducer'
 import { auth } from '../firebase'
 
 export default function Login() {
   const navigate = useNavigate()
-  const [error, setError] = React.useState<boolean>(false)
   const [loading, setLoading] = React.useState<boolean>(false)
+  const { dispatch } = React.useContext(AuthContext)
 
   const handleSubmit = async (e: any) => {
     setLoading(true)
@@ -15,8 +19,25 @@ export default function Login() {
     const password = e.target['password'].value
 
     try {
-      await signInWithEmailAndPassword(auth, email, password)
-      navigate('/')
+      const response = await signInWithEmailAndPassword(auth, email, password)
+
+      if (response.user) {
+        dispatch({
+          type: AuthTypes.LOG_IN,
+          payload: response.user,
+        })
+        toast.success('Login successful', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'light',
+        })
+        navigate('/')
+      }
     } catch (error) {
       const errorCode = (error as any).code
       const errorMessage = (error as any).message
@@ -26,7 +47,16 @@ export default function Login() {
         errorMessage,
       })
 
-      setError(true)
+      toast.error(errorMessage || 'Something went wrong!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      })
       setLoading(false)
     }
   }
@@ -51,9 +81,10 @@ export default function Login() {
             placeholder='password'
             required
           />
-          <button>Sign in</button>
-          {loading && 'Uploading and compressing the image please wait...'}
-          {error && <span>Something went wrong</span>}
+          <button className='submit-btn' disabled={loading}>
+            {loading && <Loader className='spinner' />}
+            Sign in
+          </button>
         </form>
         <p className='suggestion'>
           You don't have an account? <Link to='/register'>Register</Link>

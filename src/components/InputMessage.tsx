@@ -20,7 +20,8 @@ export default function InputMessage() {
   const [message, setMessage] = useState<string>('')
   const [img, setImg] = useState<FileList | null>(null)
   const { state: chatState } = useContext(ChatContext)
-  const { currentUser } = useContext(AuthContext)
+  const { state: authState } = useContext(AuthContext)
+  const currentUser = authState.currentUser
 
   const handleSend = async () => {
     if (img && img[0]) {

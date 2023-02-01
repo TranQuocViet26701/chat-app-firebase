@@ -2,7 +2,7 @@ import { doc, onSnapshot } from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { ChatContext, UserType } from '../context/ChatContext'
-import { Types } from '../context/reducers'
+import { Types } from '../context/reducers/ChatReducer'
 import { db } from '../firebase'
 import UserChat from './UserChat'
 
@@ -22,17 +22,17 @@ type UserChatType = {
 
 export default function UserList() {
   const [userChats, setUserChats] = useState<any>({})
-  const { currentUser } = useContext(AuthContext)
+  const { state: authState } = useContext(AuthContext)
   const { state, dispatch } = useContext(ChatContext)
-
-  console.log('state chat: ', state)
+  const currentUser = authState.currentUser
 
   useEffect(() => {
     const unsub = onSnapshot(
       doc(db, 'userChats', currentUser?.uid as string),
       (doc) => {
-        console.log(doc.data())
-        setUserChats(doc.data())
+        if (doc.data()) {
+          setUserChats(doc.data())
+        }
       }
     )
     // clean up

@@ -5,10 +5,12 @@ import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { doc, setDoc } from 'firebase/firestore'
 import { auth, db, storage } from '../firebase'
 import { Link, useNavigate } from 'react-router-dom'
+import { NO_AVATAR_URL } from '../constants'
+import { toast } from 'react-toastify'
+import { Loader } from '../components/icons/Loader'
 
 export default function Register() {
   const navigate = useNavigate()
-  const [error, setError] = React.useState<boolean>(false)
   const [loading, setLoading] = React.useState<boolean>(false)
 
   const handleSubmit = async (e: any) => {
@@ -28,6 +30,42 @@ export default function Register() {
 
       const user = userCredential.user
 
+      // don't upload avatar, save user and return
+      if (!file) {
+        try {
+          await updateProfile(user, {
+            displayName: username,
+            photoURL: NO_AVATAR_URL,
+          })
+
+          await setDoc(doc(db, 'users', user.uid), {
+            uid: user.uid,
+            displayName: username,
+            photoURL: NO_AVATAR_URL,
+            email: user.email,
+          })
+
+          await setDoc(doc(db, 'userChats', user.uid), {})
+          navigate('/')
+        } catch (error) {
+          console.log('error: ', error)
+          toast.error('Something went wrong!', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+          })
+          setLoading(false)
+        }
+        setLoading(false)
+
+        return
+      }
+
       //Create a unique image name
       const date = new Date().getTime()
       const storageRef = ref(storage, `images/${username}${date}`)
@@ -42,7 +80,16 @@ export default function Register() {
         },
         (error) => {
           console.log('error: ', error)
-          setError(true)
+          toast.error('Something went wrong!', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+          })
           setLoading(false)
         },
         async () => {
@@ -65,7 +112,16 @@ export default function Register() {
             navigate('/')
           } catch (error) {
             console.log('error: ', error)
-            setError(true)
+            toast.error('Something went wrong!', {
+              position: 'top-right',
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: 'light',
+            })
             setLoading(false)
           }
           setLoading(false)
@@ -79,7 +135,16 @@ export default function Register() {
         errorCode,
         errorMessage,
       })
-      setError(true)
+      toast.error(errorMessage || 'Something went wrong!', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      })
       setLoading(false)
     }
   }
@@ -121,9 +186,10 @@ export default function Register() {
             <img src={AddAvatar} alt='add-avatar' />
             Add an avatar
           </label>
-          <button>Sign up</button>
-          {loading && 'Uploading and compressing the image please wait...'}
-          {error && <span>Something went wrong</span>}
+          <button className='submit-btn' disabled={loading}>
+            {loading && <Loader className='spinner' />}
+            Sign up
+          </button>
         </form>
         <p className='suggestion'>
           You do have an account? <Link to='/login'>Login</Link>

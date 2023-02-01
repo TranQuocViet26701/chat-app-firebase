@@ -85,7 +85,7 @@ $backgroundColor: #ddddf7;
         }
       }
 
-      button {
+      button.submit-btn {
         background-color: $buttonColor;
         color: #fff;
         padding: 10px;
@@ -93,6 +93,19 @@ $backgroundColor: #ddddf7;
         border: none;
         cursor: pointer;
         border-radius: 2px;
+
+        .spinner {
+          margin-right: 10px;
+          animation-name: spin;
+          animation-duration: 500ms;
+          animation-iteration-count: infinite;
+          animation-timing-function: linear;
+        }
+
+        &:disabled {
+          background: $lightColor;
+          cursor: not-allowed;
+        }
       }
     }
 
@@ -373,5 +386,14 @@ $backgroundColor: #ddddf7;
         }
       }
     }
+  }
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
   }
 }
