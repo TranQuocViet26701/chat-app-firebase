@@ -3,6 +3,7 @@ import { UserType } from '../ChatContext'
 
 export enum Types {
   CHANGE_USER = 'CHANGE_USER',
+  CLEAR = 'CLEAR',
 }
 
 type ChatType = {
@@ -14,6 +15,7 @@ type ChatPayload = {
   [Types.CHANGE_USER]: UserType & {
     currentUserId?: string
   }
+  [Types.CLEAR]: null
 }
 
 export type ChatActions = ActionMap<ChatPayload>[keyof ActionMap<ChatPayload>]
@@ -32,6 +34,12 @@ export const chatReducer = (state: ChatType, action: ChatActions) => {
       return {
         user: { ...action.payload },
         chatId: currentUserId > uid ? currentUserId + uid : uid + currentUserId,
+      }
+
+    case Types.CLEAR:
+      return {
+        chatId: 'null',
+        user: {},
       }
 
     default:

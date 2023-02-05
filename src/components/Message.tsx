@@ -28,7 +28,7 @@ export default function Message({ message }: MessageProps) {
           alt=''
         />
         <div className='content'>
-          <span>{message.text}</span>
+          {message.text && <span>{message.text}</span>}
           {message.img && <img src={message.img} alt='' />}
         </div>
       </div>

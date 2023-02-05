@@ -2,16 +2,21 @@ import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 import userImage from '../assets/user-image.jpeg'
 import { AuthContext } from '../context/AuthContext'
+import { ChatContext } from '../context/ChatContext'
 import { AuthTypes } from '../context/reducers/AuthReducer'
+import { Types } from '../context/reducers/ChatReducer'
 
 export default function Navbar() {
   const navigate = useNavigate()
-  const { state: authState, dispatch } = React.useContext(AuthContext)
+  const { state: authState, dispatch: authDispatch } =
+    React.useContext(AuthContext)
   const currentUser = authState.currentUser
+  const { dispatch: chatDispatch } = React.useContext(ChatContext)
 
   const handleClick = () => {
-    dispatch({ type: AuthTypes.LOG_OUT, payload: null })
-    navigate('/login')
+    authDispatch({ type: AuthTypes.LOG_OUT, payload: null })
+    chatDispatch({ type: Types.CLEAR, payload: null })
+    navigate('/login', { replace: true })
   }
 
   return (

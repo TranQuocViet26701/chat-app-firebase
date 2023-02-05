@@ -23,7 +23,7 @@ type UserChatType = {
 export default function UserList() {
   const [userChats, setUserChats] = useState<any>({})
   const { state: authState } = useContext(AuthContext)
-  const { state, dispatch } = useContext(ChatContext)
+  const { state: chatState, dispatch } = useContext(ChatContext)
   const currentUser = authState.currentUser
 
   useEffect(() => {
@@ -64,6 +64,7 @@ export default function UserList() {
               currentUser?.uid ===
               (chat[1] as UserChatType).lastMessage?.senderId
             }
+            isActive={chatState.user.uid === userInfo.uid}
           />
         )
       })}

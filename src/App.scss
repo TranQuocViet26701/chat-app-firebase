@@ -222,7 +222,8 @@ $backgroundColor: #ddddf7;
         cursor: pointer;
         color: #fff;
 
-        &:hover {
+        &:hover,
+        &.isActive {
           background-color: $darkColor;
         }
 
@@ -311,9 +312,9 @@ $backgroundColor: #ddddf7;
               display: flex;
               flex-direction: column;
               gap: 10px;
+              max-width: 75%;
 
               span {
-                max-width: 75%;
                 background-color: #fff;
                 padding: 10px;
                 border-radius: 1px 20px 20px 20px;

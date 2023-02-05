@@ -8,6 +8,7 @@ export interface IUserChatProps {
   message?: MessageType
   handleSelect?: () => void
   isMine?: boolean
+  isActive?: boolean
 }
 
 export default function UserChat({
@@ -16,6 +17,7 @@ export default function UserChat({
   message,
   handleSelect,
   isMine = false,
+  isActive = false,
 }: IUserChatProps) {
   const handleClick = () => {
     if (!handleSelect) return
@@ -24,11 +26,14 @@ export default function UserChat({
   }
 
   return (
-    <div className='userChat' onClick={handleClick}>
+    <div
+      className={`userChat ${isActive ? 'isActive' : ''}`}
+      onClick={handleClick}
+    >
       <img src={photoURL || userImage} alt='' />
       <div className='info'>
         <span>{displayName}</span>
-        <p>{`${isMine ? 'You: ' : ''}${message?.text}`}</p>
+        {message && <p>{`${isMine ? 'You:' : ''} ${message.text}`}</p>}
       </div>
     </div>
   )
