@@ -1,4 +1,4 @@
-import { doc, onSnapshot } from 'firebase/firestore'
+import { doc, onSnapshot, Timestamp } from 'firebase/firestore'
 import { useContext, useEffect, useState } from 'react'
 import { AuthContext } from '../context/AuthContext'
 import { ChatContext, UserType } from '../context/ChatContext'
@@ -10,13 +10,13 @@ export type MessageType = {
   id?: string
   text: string
   img?: string
-  date: Date
+  date: Timestamp
   senderId: string
 }
 
 type UserChatType = {
   userInfo: UserType
-  date: Date
+  date: Timestamp
   lastMessage?: MessageType
 }
 
@@ -51,15 +51,19 @@ export default function UserList() {
   return (
     <div className='userList'>
       {Object.entries(userChats)?.map((chat) => {
-        const { userInfo, lastMessage } = chat[1] as UserChatType
+        const { userInfo } = chat[1] as UserChatType
 
         return (
           <UserChat
             key={chat[0]}
             displayName={userInfo.displayName}
             photoURL={userInfo.photoURL}
-            message={lastMessage}
+            message={(chat[1] as UserChatType).lastMessage}
             handleSelect={() => handleSelect(userInfo)}
+            isMine={
+              currentUser?.uid ===
+              (chat[1] as UserChatType).lastMessage?.senderId
+            }
           />
         )
       })}

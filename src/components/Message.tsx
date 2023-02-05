@@ -1,4 +1,6 @@
+import moment from 'moment'
 import { useContext, useMemo } from 'react'
+import { BsCheckLg } from 'react-icons/bs'
 import { AuthContext } from '../context/AuthContext'
 import { ChatContext } from '../context/ChatContext'
 import { MessageType } from './UserList'
@@ -30,7 +32,9 @@ export default function Message({ message }: MessageProps) {
           {message.img && <img src={message.img} alt='' />}
         </div>
       </div>
-      <div className='time'>just now</div>
+      <div className='time'>
+        {moment(message.date.toDate().toString()).fromNow()}
+      </div>
     </div>
   )
 }

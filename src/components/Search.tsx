@@ -12,6 +12,8 @@ import {
 import * as React from 'react'
 import { toast } from 'react-toastify'
 import { AuthContext } from '../context/AuthContext'
+import { ChatContext } from '../context/ChatContext'
+import { Types } from '../context/reducers/ChatReducer'
 import { db } from '../firebase'
 import UserChat from './UserChat'
 
@@ -20,6 +22,7 @@ export default function Search() {
   const [user, setUser] = React.useState<any>()
   const { state: authState } = React.useContext(AuthContext)
   const currentUser = authState.currentUser
+  const { state: chatState, dispatch } = React.useContext(ChatContext)
 
   const handleSearch = async () => {
     const usersRef = collection(db, 'users')
@@ -28,9 +31,21 @@ export default function Search() {
     try {
       const querySnapshot = await getDocs(q)
 
-      querySnapshot.forEach((doc) => {
-        setUser(doc.data())
-      })
+      if (querySnapshot.empty) {
+        toast.error('No user found!', {
+          position: 'top-right',
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: 'light',
+        })
+      } else
+        querySnapshot.forEach((doc) => {
+          setUser(doc.data())
+        })
     } catch (error) {
       console.log('error: ', error)
       toast.error('Something went wrong!', {
@@ -62,18 +77,31 @@ export default function Search() {
 
       if (!res.exists()) {
         // create user chat
-        await setDoc(doc(db, 'chats', combineId), { message: [] })
+        await setDoc(doc(db, 'chats', combineId), { messages: [] })
+
+        // update userChats for current user
+        await updateDoc(doc(db, 'userChats', currentUser?.uid as string), {
+          [combineId + '.userInfo']: {
+            displayName: user.displayName,
+            photoURL: user.photoURL,
+            uid: user.uid,
+          },
+        })
+
+        // update userChats for user
+        await updateDoc(doc(db, 'userChats', user?.uid as string), {
+          [combineId + '.userInfo']: {
+            displayName: currentUser?.displayName,
+            photoURL: currentUser?.photoURL,
+            uid: currentUser?.uid,
+          },
+        })
       }
 
-      await updateDoc(doc(db, 'userChats', currentUser?.uid as string), {
-        [combineId + '.userInfo']: {
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-          uid: user.uid,
-        },
-        [combineId + '.date']: serverTimestamp(),
+      dispatch({
+        type: Types.CHANGE_USER,
+        payload: { ...user, currentUserId: currentUser?.uid },
       })
-
       setUsername('')
       setUser(null)
     } catch (err) {

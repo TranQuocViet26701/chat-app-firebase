@@ -10,7 +10,6 @@ import { Home, Login, Register } from './pages'
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { state } = useContext(AuthContext)
   const { isLogin } = state
-  console.log('protected route: ', state)
   if (!isLogin) return <Navigate to='/login' replace={true} />
 
   return <>{children}</>

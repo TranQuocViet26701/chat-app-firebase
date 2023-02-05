@@ -70,15 +70,17 @@ export default function InputMessage() {
     await updateDoc(doc(db, 'userChats', currentUser?.uid as string), {
       [chatState.chatId + '.lastMessage']: {
         text: message,
+        date: serverTimestamp(),
+        senderId: currentUser?.uid,
       },
-      [chatState.chatId + '.date']: serverTimestamp(),
     })
 
     await updateDoc(doc(db, 'userChats', chatState.user.uid as string), {
       [chatState.chatId + '.lastMessage']: {
         text: message,
+        date: serverTimestamp(),
+        senderId: currentUser?.uid,
       },
-      [chatState.chatId + '.date']: serverTimestamp(),
     })
 
     setMessage('')

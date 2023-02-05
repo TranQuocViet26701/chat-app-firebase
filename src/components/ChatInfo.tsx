@@ -7,11 +7,14 @@ import {
 import { ChatContext } from '../context/ChatContext'
 
 export default function ChatInfo() {
-  const { state } = useContext(ChatContext)
+  const { state: chatState } = useContext(ChatContext)
 
   return (
     <div className='chatInfo'>
-      <div className='title'>{state.user.displayName || 'Chat Box'}</div>
+      <div className='userInfo'>
+        {chatState.user && <img src={chatState.user.photoURL} alt='' />}
+        <div className='title'>{chatState.user.displayName || 'Chat Box'}</div>
+      </div>
       <div className='chatIconList'>
         <VideoIcon />
         <AddFriendIcon />
